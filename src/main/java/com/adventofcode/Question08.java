@@ -1,9 +1,9 @@
 package com.adventofcode;
 
 import lombok.extern.log4j.Log4j2;
-import lombok.val;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 @Log4j2
 public class Question08 {
@@ -11,9 +11,7 @@ public class Question08 {
 
     public static int first(String source) {
         String[] rows = source.split("\n");
-
         int numberOfVisibleTrees = 0;
-
         // loop every row except outer 2
         for (int rowIndex = 1; rowIndex < rows.length - 1; rowIndex++) {
             String row = rows[rowIndex];
@@ -41,13 +39,35 @@ public class Question08 {
     }
 
     public static int second(String source) {
-        return 0;
+        String[] rows = source.split("\n");
+        int bestViewingScore = 0;
+        // loop every row except outer 2
+        for (int rowIndex = 1; rowIndex < rows.length - 1; rowIndex++) {
+            String row = rows[rowIndex];
+            // loop every character except outer 2
+            for (int treeIndex = 1; treeIndex < row.length() - 1; treeIndex++) {
+                int viewingScore = Question08.countAllVisibleTrees(rows, rowIndex, treeIndex);
+                if (viewingScore > bestViewingScore) {
+                    bestViewingScore = viewingScore;
+                }
+            }
+        }
+        return bestViewingScore;
+    }
+
+    protected static int countAllVisibleTrees(String[] rows, int rowIndex, int treeIndex) {
+        int totalVisible = 1;
+        totalVisible *= countRight(rows[rowIndex], treeIndex);
+        totalVisible *= countUp(rows, rowIndex, treeIndex);
+        totalVisible *= countDown(rows, rowIndex, treeIndex);
+        totalVisible *= countLeft(rows[rowIndex], treeIndex);
+        return totalVisible;
     }
 
     protected static int countRight(String row, int treeIndex) {
         int sourceTreeHeight = Integer.parseInt(String.valueOf(row.charAt(treeIndex)));
         String[] restOfRow = row.substring(treeIndex + 1).split("");
-        return countVisibleTreesOnRow(sourceTreeHeight, restOfRow);
+        return countVisibleTreesOnRowOrColumn(sourceTreeHeight, restOfRow);
     }
 
     protected static int countLeft(String row, int treeIndex) {
@@ -58,7 +78,7 @@ public class Question08 {
             .reverse()
             .toString()
             .split("");
-        return countVisibleTreesOnRow(sourceTreeHeight, reverseRestOfRow);
+        return countVisibleTreesOnRowOrColumn(sourceTreeHeight, reverseRestOfRow);
     }
 
     protected static int countDown(String[] rows, int rowIndex, int treeIndex) {
@@ -68,7 +88,7 @@ public class Question08 {
             .toList()
             .toArray(new String[0]);
         String[] restOfColumn = Arrays.copyOfRange(column, rowIndex + 1, rows.length);
-        return countVisibleTreesOnRow(sourceTreeHeight, restOfColumn);
+        return countVisibleTreesOnRowOrColumn(sourceTreeHeight, restOfColumn);
     }
 
 
@@ -78,11 +98,12 @@ public class Question08 {
             .map(row -> String.valueOf(row.charAt(treeIndex)))
             .toList()
             .toArray(new String[0]);
-        String[] restOfColumn = Arrays.copyOfRange(column, rowIndex + 1, rows.length);
-        return countVisibleTreesOnRow(sourceTreeHeight, restOfColumn);
+        String[] restOfColumn = Arrays.copyOfRange(column, 0, rowIndex);
+        Collections.reverse(Arrays.asList(restOfColumn));
+        return countVisibleTreesOnRowOrColumn(sourceTreeHeight, restOfColumn);
     }
 
-    private static int countVisibleTreesOnRow(int sourceTreeHeight, String[] restOfRow) {
+    private static int countVisibleTreesOnRowOrColumn(int sourceTreeHeight, String[] restOfRow) {
         int numberOfVisibleTrees = 0;
         for (String tree : restOfRow) {
             int targetTree = Integer.parseInt(tree);

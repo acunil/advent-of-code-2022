@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Question08Test {
 
     public static final int ANSWER_1 = 1676;
-    public static final int ANSWER_2 = 3333;
+    public static final int ANSWER_2 = 313200;
 
     String source;
 
@@ -248,5 +248,18 @@ class Question08Test {
         assertThat(Question08.countUp(source, 3, 1)).isEqualTo(1);
         assertThat(Question08.countUp(source, 3, 2)).isEqualTo(3);
         assertThat(Question08.countUp(source, 3, 3)).isEqualTo(3);
+    }
+
+    @Test
+    void testCountAllVisibleTrees() {
+        String[] source = "9509\n8942\n5438\n3179".split("\n");
+        // 9509
+        // 8942
+        // 5438
+        // 3179
+        assertThat(Question08.countAllVisibleTrees(source, 1, 1)).isEqualTo(4);
+        assertThat(Question08.countAllVisibleTrees(source, 1, 2)).isEqualTo(2);
+        assertThat(Question08.countAllVisibleTrees(source, 2, 1)).isEqualTo(2);
+        assertThat(Question08.countAllVisibleTrees(source, 2, 2)).isEqualTo(1);
     }
 }
